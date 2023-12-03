@@ -57,7 +57,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-#aasdadadsad
+
 # Creating Player Class for Adventurer
 class player:
     def __init__(self, location, health, items):
