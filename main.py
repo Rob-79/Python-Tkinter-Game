@@ -256,7 +256,7 @@ class GUI:
         self.use_medkit.configure(command=self.using_medkit)
         self.use_medkit.pack()
 
-
+    # Level 2
     # Choosing option YES
     def yes_kick(self):
         logging.info("YES")
@@ -266,7 +266,7 @@ class GUI:
 
         self.change_img("door.png")
         self.l1.config(text="Door is opened by kick. Contains fast wind. Hero crawls to groung and reach end. Will you crawl?")
-        self.yes_1.configure(command=self.Door)
+        self.yes_1.configure(command=self.Forest)
         # yes_1.pack()
 
     # Choosing option NO
@@ -275,6 +275,27 @@ class GUI:
         self.change_img("bat.png")
         self.l1.config(text="A bat flies over your head and you hear screetches in the distance. You sit in total darkness wondering if there's a way out.")
 
+    
+    # Level 3
+    # Choosing option YES
+    def Forest(self):
+        logging.info("YES")
+        self.medkit()
+        self.bat_attack()
+
+        self.change_img("Forest.jpg")
+        self.l1.config(text="You Enter a lush green forest. Will you traverse through it?")
+        self.l2.pack()
+        self.no_1.configure(command=self.no_Forest)
+        self.yes_1.configure(command=self.Door)
+
+    # Choosing option NO
+    def no_Forest(self):
+        logging.info("NO")
+        self.l1.config(text="You wait idly in the forest")
+        self.l2.pack()
+
+    # Level 4
     # Choosing option YES
     def Door(self):
         logging.info("YES")
@@ -293,6 +314,7 @@ class GUI:
         self.l1.config(text="You are injured because crocodile hits you. You are thinking any other way except using rope.")
         self.l2.pack()
 
+    # Level 5
     # Choosing option YES
     def Alarming(self):
         logging.info("YES")
@@ -303,7 +325,7 @@ class GUI:
         self.l1.config(text="Space contains fire with sand dunes. Hero puts off fire with sand. Will you do this?")
         self.l2.pack()
         self.no_1.configure(command=self.no_Alarming)
-        self.yes_1.configure(command=self.Cavern)
+        self.yes_1.configure(command=self.Desert_city)
 
     # Choosing option NO
     def no_Alarming(self):
@@ -311,6 +333,28 @@ class GUI:
         self.l1.config(text="Your one leg and arm has burned because of fire.")
         self.l2.pack()
 
+
+    # Level 6
+    # Choosing option YES
+    def Desert_city(self):
+        logging.info("YES")
+        self.medkit()
+        self.bat_attack()
+
+        self.change_img("Desert_city.png")
+        self.l1.config(text="You see ruins of a city. Will you pass through it?")
+        self.l2.pack()
+        self.no_1.configure(command=self.no_Desert_city)
+        self.yes_1.configure(command=self.Cavern)
+
+    # Choosing option NO
+    def no_Desert_city(self):
+        logging.info("NO")
+        self.l1.config(text="You see a sandstorm approaching and will not be able to survive it")
+        self.l2.pack()
+
+
+    # Level 7
     # Choosing option YES
     def Cavern(self):
         logging.info("YES")
@@ -321,7 +365,7 @@ class GUI:
         self.l1.config(text="You stumble into a dimly lit cavern. You cannot go right or left but the cave continues ahead. Will you go on?")
         self.l2.pack()
         self.no_1.configure(command=self.no_Cavern)
-        self.yes_1.configure(command=self.Hallway)
+        self.yes_1.configure(command=self.Cave_goblin)
 
     # Choosing option NO
     def no_Cavern(self):
@@ -329,6 +373,66 @@ class GUI:
         self.l1.config(text="You sit down and eat some food you brought with you.")
         self.l2.pack()
 
+    # Level 8
+    # Choosing option YES
+    def Cave_goblin(self):
+        logging.info("YES")
+        self.medkit()
+        self.bat_attack()
+
+        self.change_img("Cave_goblin.png")
+        self.l1.config(text="You see a Goblin, standing by the fire. Will you try to get past silently?")
+        self.l2.pack()
+        self.no_1.configure(command=self.no_Cave_goblin)
+        self.yes_1.configure(command=self.Castle)
+
+    # Choosing option NO
+    def no_Cave_goblin(self):
+        logging.info("NO")
+        self.l1.config(text="Goblin notices you and trys to attack with his weapon.")
+        self.l2.pack()
+
+
+    # Level 8
+    # Choosing option YES
+    def Castle(self):
+        logging.info("YES")
+        self.medkit()
+        self.bat_attack()
+
+        self.change_img("Castle.png")
+        self.l1.config(text="Ruins of a great castle emerge from the fog. Would you explore it?")
+        self.l2.pack()
+        self.no_1.configure(command=self.no_Castle)
+        self.yes_1.configure(command=self.Castle_entrance)
+
+    # Choosing option NO
+    def no_Castle(self):
+        logging.info("NO")
+        self.l1.config(text="You stand idle in the cold and windy landscape")
+        self.l2.pack()
+
+
+    # Level 8
+    # Choosing option YES
+    def Castle_entrance(self):
+        logging.info("YES")
+        self.medkit()
+        self.bat_attack()
+
+        self.change_img("Castle_Entrance.png")
+        self.l1.config(text="You stumble upon the entrance of the great castle. Would you go in?")
+        self.l2.pack()
+        self.no_1.configure(command=self.no_Castle_entrance)
+        self.yes_1.configure(command=self.Hallway)
+
+    # Choosing option NO
+    def no_Castle_entrance(self):
+        logging.info("NO")
+        self.l1.config(text="Scary noises can be heard in the distance, while you look at the castle door ahead.")
+        self.l2.pack()
+
+    # Level 9
     # Choosing option YES
     def Hallway(self):
         logging.info("YES")
@@ -347,6 +451,7 @@ class GUI:
         self.l1.config(text="You try to call your help but no one is there.")
         self.l2.pack()
 
+    # Level 10
     # Choosing option YES
     def Pit(self):
         logging.info("YES")
@@ -357,7 +462,7 @@ class GUI:
         self.l1.config(text="You fall head first into an ominous and languid pit. Luckly, you only landed on your back. You can try to climb out. Will you try?")
         self.l2.pack()
         self.no_1.configure(command=self.no_Pit)
-        self.yes_1.configure(command=self.Gold)
+        self.yes_1.configure(command=self.Dungeon)
 
     # Choosing option NO
     def no_Pit(self):
@@ -365,6 +470,26 @@ class GUI:
         self.l1.config(text="You sit in utter darkness.")
         self.l2.pack()
 
+    # Level 10
+    # Choosing option YES
+    def Dungeon(self):
+        logging.info("YES")
+        self.medkit()
+        self.bat_attack()
+
+        self.change_img("Dungeon.png")
+        self.l1.config(text="You find yourself in a Dungeon, at the end you see a door with shining light beaming through. Will you pry inside?")
+        self.l2.pack()
+        self.no_1.configure(command=self.no_Dungeon)
+        self.yes_1.configure(command=self.Gold)
+
+    # Choosing option NO
+    def no_Dungeon(self):
+        logging.info("NO")
+        self.l1.config(text="You stand the dark hallway.")
+        self.l2.pack()
+
+    # Level 11
     # Choosing option YES
     def Gold(self):
         logging.info("YES")
@@ -441,6 +566,25 @@ class World:
         print(f"\nHealth: {hero.health}")
         game_functions.fprint("Door is opened by kick. Contains fast wind.", 2)
         print("Hero crawls to groung and reach end. Will you crawl?")
+        print("Enter 'yes' or 'no'.")
+        self.check_medkit()
+        self.handle_goblin()
+        while True:
+            action = input("\n> ")
+            if action == "yes":
+                self.forest()
+            elif action == "no":
+                game_functions.fprint("You hear loud voices of wind.")
+            elif action == "m":
+                self.use_medkit()
+            else:
+                game_functions.fprint("You are scare of voices.")
+
+    def forest(self):
+        hero.location = "forest"
+        print(f"\nHealth: {hero.health}")
+        game_functions.fprint("It is a lush forest.", 2)
+        print("Ahead you can see a muddy path. Will you traverse the path?")
         print("Enter 'yes' or 'no'.")
         self.check_medkit()
         self.handle_goblin()
