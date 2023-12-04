@@ -15,6 +15,7 @@ import tkinter
 from tkinter import *
 from PIL import ImageTk, Image
 from tkinter import messagebox
+from tkinter import ttk
 
 import logging
 import logging.handlers as handlers
@@ -23,6 +24,8 @@ from datetime import datetime
 import subprocess as s
 
 from test import pid
+
+import pygame
 
 test_pid = pid
 
@@ -60,12 +63,13 @@ logger.addHandler(handler)
 
 # Creating Player Class for Adventurer
 class player:
-    def __init__(self, location, health, items):
+    def __init__(self, location, health, items, score):
         self.location = location
         self.health = health
         self.items = items
+        self.score = 0
 
-hero = player("entry", 100, 0)
+hero = player("entry", 100, 0, 0)
 
 class NotificationManager:
     def __init__(self, parent):
@@ -81,7 +85,7 @@ class NotificationManager:
         notification.destroy_window()
 
 class NotificationWindow:
-    def __init__(self, parent, title, image_path, text, destroy_callback):
+    def __init__(self, parent, title, image_path, text, destroy_callback, duration=1000):
         self.parent = parent
         self.window = Toplevel(parent)
         self.window.title(title)
@@ -97,11 +101,16 @@ class NotificationWindow:
         notification_label = Label(self.window, text=text)
         notification_label.pack(pady=10)
 
+        # Schedule the destruction of the notification window after the specified duration
+        self.window.after(duration, lambda: destroy_callback(self))
+
         ok_button = Button(self.window, text="OK", command=lambda: destroy_callback(self))
         ok_button.pack(pady=10)
 
         # Adjust the geometry of the notification window as needed
         self.window.geometry("300x200+350+250")  # Change the size and position
+
+        
 
     def destroy_window(self):
         self.window.destroy()
@@ -119,12 +128,16 @@ class GUI:
         window.title("Adventure Game")
 
         window.geometry("966x745+0+0")
-        window.minsize(width=966, height=745)
-        window.maxsize(width=966, height=745)
+        window.minsize(width=966, height=850)
+        window.maxsize(width=966, height=850)
 
+        # Create a black bar at the top for displaying the score
+        self.score_label = tkinter.Label(window, text="SCORE: 0", bg="black", fg="white", font=("Helvetica", 16))
+        self.score_label.pack(fill="x")
 
         frame = Frame(window)
-        frame.pack()
+        frame.pack(expand=True, fill="both", anchor=tkinter.CENTER)
+
         
         print("Medkits", hero.items)
 
@@ -164,12 +177,56 @@ class GUI:
 
         self.notification_manager = NotificationManager(window)
 
+        # Initialize the level indicator
+        self.level_indicator = ttk.Progressbar(frame, orient="horizontal", length=600, mode="determinate")
+        
+
+        # Add labels at the start and end
+        self.start_label = tkinter.Label(frame, text="Start", font=("Helvetica", 10))
+        
+
+        self.end_label = tkinter.Label(frame, text="End", font=("Helvetica", 10))
+        
+
+        # Set the initial level
+        self.current_level = 0
+        self.update_level_indicator()
+
+        # Initialize Pygame mixer for sound
+        pygame.mixer.init()
+
+        # Load and play background music in a loop
+        pygame.mixer.music.load("SFX\PerituneMaterial_Foreboding(chosic.com).mp3")  # Replace with your music file
+        pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+
+    def update_score_label(self):
+        # Update the score label with the current score
+        self.score_label["text"] = f"SCORE: {hero.score}"
+
+    def update_level_indicator(self):
+        # Update the level indicator based on the current level
+        self.level_indicator["value"] = self.current_level
+        self.level_indicator["maximum"] = 130  # Set the maximum value based on the total number of levels
+
+    def change_level(self, increment):
+        # Change the current level based on the increment
+        self.current_level += increment
+        self.update_level_indicator()
+
+        # # Add logic to check for completion of the game or specific events at certain levels
+        # if self.current_level == 50:
+        #     self.Door()  # Example: Call a function when reaching level 50
+
+
     # Function to make Medkit
     def medkit(self):
         medkit_find = random.choice([True, False])
         if medkit_find is True:
 
             self.notification_manager.show_notification("Medkit Notification", "Medkit.jpg", "Medkit Found")
+            hero.score += 50
+            self.update_score_label()
+
             hero.items += 1
             medkit_text = "MEDKITS = " + str(hero.items)
             self.l3.configure(text=medkit_text)
@@ -183,6 +240,9 @@ class GUI:
 
             hero.items -= 1
 
+            hero.score += 30
+            self.update_score_label()
+
             medkit_text = "MEDKITS = " + str(hero.items)
             self.l3.configure(text=medkit_text)
             self.l3.pack()
@@ -195,12 +255,51 @@ class GUI:
             
         if bat_attack:
             self.notification_manager.show_notification("Attack Notification", "bat.png", "Bat Attack!!")
-            hero.health -= random.randint(1, 100)
+            hero.health -= random.randint(1, 50)
             health_text = "HEALTH = " + str(hero.health)
             self.l2.configure(text=health_text)
 
+            hero.score += 30
+            self.update_score_label()
+
             # Killing the Game
             if hero.health <= 0:
+                pygame.mixer.music.stop()
+                # Load and play background music in a loop
+                pygame.mixer.music.load ("SFX\mixkit-horror-lose-2028.wav")  # Replace with your music file
+                pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+                
+                game_over = True
+                print(game_over)
+                
+                logging.info("YOU DIED")
+                tkinter.messagebox.showinfo( "Death", "You Died!!")
+                self.window.destroy()
+                # killProcess(test_pid)
+                os._exit(0)
+                # sys.exit()
+
+    
+        # Function to handle Bat Attack
+    def snake_attack(self):
+        snake_attack = random.choice([True, False])
+            
+        if snake_attack:
+            self.notification_manager.show_notification("Attack Notification", "Snake.png", "Snake Attack!!")
+            hero.health -= random.randint(1, 30)
+            health_text = "HEALTH = " + str(hero.health)
+            self.l2.configure(text=health_text)
+
+            hero.score += 30
+            self.update_score_label()
+
+            # Killing the Game
+            if hero.health <= 0:
+                pygame.mixer.music.stop()
+                # Load and play background music in a loop
+                pygame.mixer.music.load ("SFX\mixkit-horror-lose-2028.wav")  # Replace with your music file
+                pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+                
                 game_over = True
                 print(game_over)
                 
@@ -256,6 +355,10 @@ class GUI:
         self.use_medkit.configure(command=self.using_medkit)
         self.use_medkit.pack()
 
+        self.level_indicator.pack(pady=10)
+        self.start_label.pack(side="left", padx=80)
+        self.end_label.pack(side="right", padx=80)
+
     # Level 2
     # Choosing option YES
     def yes_kick(self):
@@ -263,11 +366,17 @@ class GUI:
         print("Location", hero.location)
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("door.png")
         self.l1.config(text="Door is opened by kick. Contains fast wind. Hero crawls to groung and reach end. Will you crawl?")
         self.yes_1.configure(command=self.Forest)
+
+        self.change_level(10)
         # yes_1.pack()
+
+        hero.score += 50
+        self.update_score_label()
 
     # Choosing option NO
     def no_kick(self):
@@ -282,6 +391,7 @@ class GUI:
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Forest.jpg")
         self.l1.config(text="You Enter a lush green forest. Will you traverse through it?")
@@ -289,11 +399,19 @@ class GUI:
         self.no_1.configure(command=self.no_Forest)
         self.yes_1.configure(command=self.Door)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Forest(self):
         logging.info("NO")
         self.l1.config(text="You wait idly in the forest")
         self.l2.pack()
+
+        hero.score -= 50
+        self.update_score_label()
 
     # Level 4
     # Choosing option YES
@@ -301,6 +419,7 @@ class GUI:
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Lake2.png")
         self.l1.config(text="It's a long lake and there are two crocodiles in it. Ahead, you can see a rope. Will you swing from rope to get to end point?")
@@ -308,11 +427,19 @@ class GUI:
         self.no_1.configure(command=self.no_Door)
         self.yes_1.configure(command=self.Alarming)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Door(self):
         logging.info("NO")
         self.l1.config(text="You are injured because crocodile hits you. You are thinking any other way except using rope.")
         self.l2.pack()
+
+        hero.score -= 50
+        self.update_score_label()
 
     # Level 5
     # Choosing option YES
@@ -320,6 +447,7 @@ class GUI:
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("sand_dune.png")
         self.l1.config(text="Space contains fire with sand dunes. Hero puts off fire with sand. Will you do this?")
@@ -327,11 +455,19 @@ class GUI:
         self.no_1.configure(command=self.no_Alarming)
         self.yes_1.configure(command=self.Desert_city)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Alarming(self):
         logging.info("NO")
         self.l1.config(text="Your one leg and arm has burned because of fire.")
         self.l2.pack()
+
+        hero.score -= 50
+        self.update_score_label()
 
 
     # Level 6
@@ -340,6 +476,7 @@ class GUI:
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Desert_city.png")
         self.l1.config(text="You see ruins of a city. Will you pass through it?")
@@ -347,11 +484,19 @@ class GUI:
         self.no_1.configure(command=self.no_Desert_city)
         self.yes_1.configure(command=self.Cavern)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Desert_city(self):
         logging.info("NO")
         self.l1.config(text="You see a sandstorm approaching and will not be able to survive it")
         self.l2.pack()
+
+        hero.score -= 50
+        self.update_score_label()
 
 
     # Level 7
@@ -360,6 +505,7 @@ class GUI:
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Cavern.png")
         self.l1.config(text="You stumble into a dimly lit cavern. You cannot go right or left but the cave continues ahead. Will you go on?")
@@ -367,11 +513,19 @@ class GUI:
         self.no_1.configure(command=self.no_Cavern)
         self.yes_1.configure(command=self.Cave_goblin)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Cavern(self):
         logging.info("NO")
         self.l1.config(text="You sit down and eat some food you brought with you.")
         self.l2.pack()
+
+        hero.score -= 50
+        self.update_score_label()
 
     # Level 8
     # Choosing option YES
@@ -379,6 +533,7 @@ class GUI:
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Cave_goblin.png")
         self.l1.config(text="You see a Goblin, standing by the fire. Will you try to get past silently?")
@@ -386,19 +541,28 @@ class GUI:
         self.no_1.configure(command=self.no_Cave_goblin)
         self.yes_1.configure(command=self.Castle)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Cave_goblin(self):
         logging.info("NO")
         self.l1.config(text="Goblin notices you and trys to attack with his weapon.")
         self.l2.pack()
 
+        hero.score -= 50
+        self.update_score_label()
 
-    # Level 8
+
+    # Level 9
     # Choosing option YES
     def Castle(self):
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Castle.png")
         self.l1.config(text="Ruins of a great castle emerge from the fog. Would you explore it?")
@@ -406,19 +570,28 @@ class GUI:
         self.no_1.configure(command=self.no_Castle)
         self.yes_1.configure(command=self.Castle_entrance)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Castle(self):
         logging.info("NO")
         self.l1.config(text="You stand idle in the cold and windy landscape")
         self.l2.pack()
 
+        hero.score -= 50
+        self.update_score_label()
 
-    # Level 8
+
+    # Level 10
     # Choosing option YES
     def Castle_entrance(self):
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Castle_Entrance.png")
         self.l1.config(text="You stumble upon the entrance of the great castle. Would you go in?")
@@ -426,18 +599,27 @@ class GUI:
         self.no_1.configure(command=self.no_Castle_entrance)
         self.yes_1.configure(command=self.Hallway)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Castle_entrance(self):
         logging.info("NO")
         self.l1.config(text="Scary noises can be heard in the distance, while you look at the castle door ahead.")
         self.l2.pack()
 
-    # Level 9
+        hero.score -= 50
+        self.update_score_label()
+
+    # Level 11
     # Choosing option YES
     def Hallway(self):
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("hallway.png")
         self.l1.config(text="You are in a wide hallway. It continues on indefinitely. There's no turning back. Will you go on?")
@@ -445,18 +627,27 @@ class GUI:
         self.no_1.configure(command=self.no_Hallway)
         self.yes_1.configure(command=self.Pit)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Hallway(self):
         logging.info("NO")
         self.l1.config(text="You try to call your help but no one is there.")
         self.l2.pack()
 
-    # Level 10
+        hero.score -= 50
+        self.update_score_label()
+
+    # Level 12
     # Choosing option YES
     def Pit(self):
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Pit.png")
         self.l1.config(text="You fall head first into an ominous and languid pit. Luckly, you only landed on your back. You can try to climb out. Will you try?")
@@ -464,18 +655,27 @@ class GUI:
         self.no_1.configure(command=self.no_Pit)
         self.yes_1.configure(command=self.Dungeon)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Pit(self):
         logging.info("NO")
         self.l1.config(text="You sit in utter darkness.")
         self.l2.pack()
 
-    # Level 10
+        hero.score -= 50
+        self.update_score_label()
+
+    # Level 13
     # Choosing option YES
     def Dungeon(self):
         logging.info("YES")
         self.medkit()
         self.bat_attack()
+        self.snake_attack()
 
         self.change_img("Dungeon.png")
         self.l1.config(text="You find yourself in a Dungeon, at the end you see a door with shining light beaming through. Will you pry inside?")
@@ -483,13 +683,21 @@ class GUI:
         self.no_1.configure(command=self.no_Dungeon)
         self.yes_1.configure(command=self.Gold)
 
+        hero.score += 50
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def no_Dungeon(self):
         logging.info("NO")
         self.l1.config(text="You stand the dark hallway.")
         self.l2.pack()
 
-    # Level 11
+        hero.score -= 50
+        self.update_score_label()
+
+    # Level 14
     # Choosing option YES
     def Gold(self):
         logging.info("YES")
@@ -499,11 +707,24 @@ class GUI:
         self.no_1.configure(command=self.Lose)
         self.yes_1.configure(command=self.Win)
 
+        hero.score += 100
+        self.update_score_label()
+
+        self.change_level(10)
+
     # Choosing option NO
     def Lose(self):
         logging.info("LOSE")
         self.change_img("Lose.png")
         self.l1.config(text="You did not take the Gold. GAME OVER!")
+
+        pygame.mixer.music.stop()
+        # Load and play background music in a loop
+        pygame.mixer.music.load("SFX\mixkit-game-over-trombone-1940.wav")  # Replace with your music file
+        pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+
+        hero.score -= 100
+        self.update_score_label()
 
     # Choosing option YES
     def Win(self):
@@ -511,6 +732,13 @@ class GUI:
         self.change_img("Win.png")
         self.l1.config(text="You took enough gold. GAME OVER!")
         self.l2.pack()
+
+        pygame.mixer.music.stop()
+        # Load and play background music in a loop
+        pygame.mixer.music.load("SFX\mixkit-medieval-show-fanfare-announcement-226.wav")  # Replace with your music file
+        pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+
+
 
 
 class Game:
