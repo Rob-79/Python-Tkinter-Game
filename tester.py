@@ -1,6 +1,6 @@
 import unittest
 from tkinter import Tk
-from main import GUI  # Make sure to replace 'your_main_module' with the actual module name
+from main import GUI 
 import time
 
 import coverage
@@ -47,7 +47,7 @@ class TestGameMainCode(unittest.TestCase):
         gui = GUI(root)
 
         
-        # Assuming that the buttons are part of the GUI
+        # Buttons that are part of the GUI
         yes_button_exists = gui.yes_1.winfo_exists()
         no_button_exists = gui.no_1.winfo_exists()
         
@@ -60,7 +60,7 @@ class TestGameMainCode(unittest.TestCase):
         gui = GUI(root)
 
         
-        # Assuming that the buttons are part of the GUI
+        # Buttons that are part of the GUI
         yes_button_exists = gui.yes_1.winfo_exists()
         no_button_exists = gui.no_1.winfo_exists()
         medkit_button = gui.use_medkit.winfo_exists()
@@ -75,7 +75,6 @@ if __name__ == '__main__':
     cov.start()
 
     unittest.main()
-    # .. call your code ..
 
     cov.stop()
 
