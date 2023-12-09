@@ -191,6 +191,7 @@ class GUI:
 
         # Set the initial level
         self.current_level = 0
+        self.max_level = 14
         self.update_level_indicator()
 
         # Initialize Pygame mixer for sound
