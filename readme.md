@@ -33,13 +33,13 @@ The Adventure Game is an interactive text-based game implemented in Python using
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/adventure-game.git
+   git clone https://github.com/Rob-79/Python-Tkinter-Game.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd adventure-game
+   cd Python-Tkinter-Game
    ```
 
 3. Run the game:
@@ -60,19 +60,12 @@ Contributions are welcome! Please follow the [contribution guidelines](CONTRIBUT
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-```
 
-Remember to customize the content based on the specifics of your project. If you have additional sections or details, feel free to add or modify as needed.
-
-## Video Demo
-
-
-
+## Video Demo for Old Code base
 
 https://github.com/Rob-79/Python-Tkinter-Game/assets/148342139/ff5be7ad-2882-4d46-be83-3fd61bd466a8
 
-
-## Video Demo New
+## Video Demo for New Code base
 
 https://github.com/Rob-79/Python-Tkinter-Game/assets/148342139/3527b727-3d00-4890-b0e9-76d001acf3d1
 
