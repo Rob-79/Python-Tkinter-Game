@@ -56,11 +56,7 @@ Contributions are welcome! Please follow the [contribution guidelines](CONTRIBUT
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Video Demo for Old Code base
-
-https://github.com/Rob-79/Python-Tkinter-Game/assets/148342139/ff5be7ad-2882-4d46-be83-3fd61bd466a8
-
-## Video Demo for New Code base
+## Video Demo
 
 https://github.com/Rob-79/Python-Tkinter-Game/assets/148342139/3527b727-3d00-4890-b0e9-76d001acf3d1
 
