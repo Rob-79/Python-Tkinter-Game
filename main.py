@@ -15,11 +15,11 @@ from datetime import datetime
 
 import subprocess as s
 
-from test import pid
+# from test import pid
 
 import pygame
 
-test_pid = pid
+# test_pid = pid
 
 def killProcess(pid):
     s.Popen('taskkill /F /PID {0}'.format(pid), shell=True)

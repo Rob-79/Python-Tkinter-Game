@@ -2,12 +2,17 @@ import unittest
 from tkinter import Tk
 from main import GUI 
 import time
+from unittest.mock import patch
+
+import main
 
 import coverage
 
 
 
 class TestGameMainCode(unittest.TestCase):
+
+    # hero = player("entry", 100, 0, 0)
 
     def test_main_code_execution(self):
         try:
@@ -68,6 +73,51 @@ class TestGameMainCode(unittest.TestCase):
         root.destroy()
         
         assert yes_button_exists and no_button_exists and medkit_button and level_indicator_bar, "All UI accessbility buttons are available"
+
+    @patch('random.choice', return_value=True)  # Mocking random.choice to always return True
+    def test_multiple_attacks(self, mock_random_choice):
+        root = Tk()
+        gui = GUI(root)
+        
+        # hero = player("entry", 100, 0, 0)
+        
+        gui.bat_attack()
+        gui.snake_attack()
+
+        root.destroy()
+
+        print("Player Health after attacks: ", main.hero.health)
+        self.assertTrue(main.hero.health <= 100, "Health should be less than 100")
+
+
+    @patch('random.choice', return_value=True)  # Mocking random.randint to always return a specific value
+    def test_scoring_after_successful_attack(self, mock_random_randint):
+        root = Tk()
+        gui = GUI(root)
+                
+        gui.bat_attack()
+        gui.snake_attack()
+
+        root.destroy()
+
+        print("Player Score: ", main.hero.score)
+        self.assertTrue(main.hero.score > 0, "Health should be less than 100")
+
+
+    def test_show_notification(self):
+        root = Tk()
+        gui = GUI(root)
+
+
+        gui.notification_manager.show_notification("Test Notification", "Medkit.jpg", "This is a test notification")
+
+        # Checking if the notifications has been added to the Notification list
+        self.assertEqual(len(gui.notification_manager.notifications), 1)
+
+
+
+
+        
 
 
 if __name__ == '__main__':
