@@ -1,10 +1,5 @@
 # Adventure Game Tkinter
 
-Certainly! Below is a template for a `readme.md` file for your project. Please replace the placeholder text with the actual information about your project.
-
-
-# Adventure Game
-
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Overview
